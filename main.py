@@ -1,6 +1,7 @@
-from datetime import datetime
 import os
-from flask import Flask, jsonify, request, render_template, redirect
+from datetime import datetime
+
+from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
 # Basic app configuration
@@ -25,19 +26,24 @@ class ToDoTask(db.Model):
         return {column.name: getattr(self, column.name) for column in self.__table__.columns}
 
 
-@app.route('/todotasks', methods=['GET'])
+@app.route('/todos', methods=['GET'])
 def get_all_tasks():
-    todotasks = db.session.query(ToDoTask).all()
-    todotasks_json = [task.to_dict() for task in todotasks]
-    return jsonify(todotasks=todotasks_json)
+    todos = db.session.query(ToDoTask).all()
+    todos_json = [task.to_dict() for task in todos]
+    return jsonify(todos=todos_json)
 
 
-@app.route('/todotask/<int:todotask_id>')
-def get_todotask(todotask_id):
-    todotask_id = todotask_id
-    todotask = db.session.query(ToDoTask).where(ToDoTask.id == todotask_id).first()
-    return jsonify(todotask=todotask.to_dict())
+@app.route('/todos/<int:todo_id>', methods=['GET'])
+def get_todo(todo_id):
+    todo = db.session.query(ToDoTask).where(ToDoTask.id == todo_id).first()
+    return jsonify(todotask=todo.to_dict())
 
+
+@app.route('/todos/<int:todo_id>', methods=['DELETE'])
+def delete_todo(todo_id):
+    todo = db.session.query(ToDoTask).where(ToDoTask.id == todo_id).first()
+    print('This is delete')
+    return jsonify(todotask=todo.to_dict())
 
 
 if __name__ == '__main__':
