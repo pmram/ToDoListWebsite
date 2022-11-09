@@ -61,6 +61,7 @@ def add_todo():
     else:
         return jsonify(error={"Not Allowed": "Sorry, the key provided is not correct"}), 403
 
+
 @app.route('/todos/<int:todo_id>', methods=['PATCH'])
 def update_todo(todo_id):
     body = request.get_json()
