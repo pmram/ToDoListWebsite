@@ -32,5 +32,13 @@ def get_all_tasks():
     return jsonify(todotasks=todotasks_json)
 
 
+@app.route('/todotask/<int:todotask_id>')
+def get_todotask(todotask_id):
+    todotask_id = todotask_id
+    todotask = db.session.query(ToDoTask).where(ToDoTask.id == todotask_id).first()
+    return jsonify(todotask=todotask.to_dict())
+
+
+
 if __name__ == '__main__':
     app.run(debug=True)
