@@ -51,7 +51,7 @@ def add_todo():
         new_todo = ToDoTask(
             description=body_dict.get('description'),
             responsible=body_dict.get('responsible'),
-            created=datetime.strptime(body_dict.get('created'), '%Y-%m-%d %H:%M:%S.%f'),
+            created=datetime.now(),
             duedate=datetime.strptime(body_dict.get('duedate'), '%Y-%m-%d %H:%M:%S.%f'),
             done=body_dict.get('done'),
         )
