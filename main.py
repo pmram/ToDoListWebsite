@@ -1,7 +1,8 @@
+import json
 import os
 from datetime import datetime
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 
 # Basic app configuration
@@ -18,7 +19,7 @@ class ToDoTask(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(500), nullable=False)
     responsible = db.Column(db.String(250), nullable=False)
-    created = db.Column(db.DateTime, default=datetime.utcnow())
+    created = db.Column(db.DateTime, default=datetime.now())
     duedate = db.Column(db.DateTime, nullable=True)
     done = db.Column(db.Boolean, nullable=False)
 
@@ -36,14 +37,43 @@ def get_all_tasks():
 @app.route('/todos/<int:todo_id>', methods=['GET'])
 def get_todo(todo_id):
     todo = db.session.query(ToDoTask).where(ToDoTask.id == todo_id).first()
-    return jsonify(todotask=todo.to_dict())
+    if todo:
+        return jsonify(todotask=todo.to_dict())
+    else:
+        return jsonify(error={"Not Found": "Sorry, a todo with that id does not exist in the database"}), 404
+
+
+@app.route('/todos/<int:todo_id>', methods=['PATCH'])
+def update_todo(todo_id):
+    body = request.get_json()
+    todo = db.session.query(ToDoTask).where(ToDoTask.id == todo_id).first()
+    if todo:
+        if request.args.get('api-key') == API_KEY:
+            new_todo = json.loads(body)
+            todo.description = new_todo.get('description')
+            todo.responsible = new_todo.get('responsible')
+            todo.done = new_todo.get('done')
+            todo.duedate = datetime.strptime(new_todo.get('duedate'), '%Y-%m-%d %H:%M:%S.%f')
+            db.session.commit()
+            return jsonify({"success": "Successfully removed the todo."}), 200
+        else:
+            return jsonify(error={"Not Allowed": "Sorry, the key provided is not correct"}), 403
+    else:
+        return jsonify(error={"Not Found": "Sorry, a todo with that id does not exist in the database"}), 404
 
 
 @app.route('/todos/<int:todo_id>', methods=['DELETE'])
 def delete_todo(todo_id):
     todo = db.session.query(ToDoTask).where(ToDoTask.id == todo_id).first()
-    print('This is delete')
-    return jsonify(todotask=todo.to_dict())
+    if todo:
+        if request.args.get('api-key') == API_KEY:
+            db.session.delete(todo)
+            db.session.commit()
+            return jsonify({"success": "Successfully removed the todo."}), 200
+        else:
+            return jsonify(error={"Not Allowed": "Sorry, the key provided is not correct"}), 403
+    else:
+        return jsonify(error={"Not Found": "Sorry, a todo with that id does not exist in the database"}), 404
 
 
 if __name__ == '__main__':
