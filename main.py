@@ -43,6 +43,24 @@ def get_todo(todo_id):
         return jsonify(error={"Not Found": "Sorry, a todo with that id does not exist in the database"}), 404
 
 
+@app.route('/todos', methods=['POST'])
+def add_todo():
+    body = request.get_json()
+    if request.args.get('api-key') == API_KEY:
+        body_dict = json.loads(body)
+        new_todo = ToDoTask(
+            description=body_dict.get('description'),
+            responsible=body_dict.get('responsible'),
+            created=datetime.strptime(body_dict.get('created'), '%Y-%m-%d %H:%M:%S.%f'),
+            duedate=datetime.strptime(body_dict.get('duedate'), '%Y-%m-%d %H:%M:%S.%f'),
+            done=body_dict.get('done'),
+        )
+        db.session.add(new_todo)
+        db.session.commit()
+        return jsonify({"success": "Successfully removed the todo."}), 200
+    else:
+        return jsonify(error={"Not Allowed": "Sorry, the key provided is not correct"}), 403
+
 @app.route('/todos/<int:todo_id>', methods=['PATCH'])
 def update_todo(todo_id):
     body = request.get_json()
