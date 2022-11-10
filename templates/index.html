@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+  <table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Description</th>
+      <th scope="col">Responsible</th>
+      <th scope="col">Created</th>
+      <th scope="col">Due date</th>
+      <th scope="col">Done</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for todo in todos %}
+    <tr>
+      <th scope="row">{{ todo.get('id')}}</th>
+      <td>{{ todo.get('description')}}</td>
+      <td>{{ todo.get('responsible')}}</td>
+      <td>{{ todo.get('created')}}</td>
+      <td>{{ todo.get('duedate')}}</td>
+      <td>{{ todo.get('done')}}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+
+{% endblock %}
