@@ -3,7 +3,6 @@ import os
 from datetime import datetime
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
-from werkzeug import run_simple
 
 # Basic app configuration
 app = Flask(__name__)
